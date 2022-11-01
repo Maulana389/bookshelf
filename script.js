@@ -3,9 +3,9 @@ const RENDER_EVENT = 'render-book';
 const SAVED_EVENT = 'saved-book';
 const STORAGE_KEY = 'BOOKS_APPS';
 
-document.addEventListener('DOMContentLoaded',function(){
+document.addEventListener('DOMContentLoaded', function () {
   const submit = document.getElementById('form');
-  submit.addEventListener("submit", function(event){
+  submit.addEventListener("submit", function (event) {
     event.preventDefault();
     Swal.fire({
       title: 'apakah mau disimpan',
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded',function(){
 function loadDataFromStorage() {
   const serializedData = localStorage.getItem(STORAGE_KEY);
   let data = JSON.parse(serializedData);
- 
+
   if (data !== null) {
     for (const book of data) {
       books.push(book);
@@ -40,7 +40,7 @@ function loadDataFromStorage() {
   document.dispatchEvent(new Event(RENDER_EVENT));
 }
 
-function isStorageExist(){
+function isStorageExist() {
   if (typeof (Storage) === undefined) {
     alert('Browser kamu tidak mendukung local storage');
     return false;
@@ -49,8 +49,10 @@ function isStorageExist(){
 }
 
 document.addEventListener(SAVED_EVENT, function () {
+  console.log(books);
   console.log('succes')
 });
+
 function saveData() {
   if (isStorageExist()) {
     const parsed = JSON.stringify(books);
@@ -59,14 +61,14 @@ function saveData() {
   }
 }
 
-function addBook(){
+function addBook() {
   const title = document.getElementById('JudulBuku').value;
   const authors = document.getElementById('PengarangBuku').value;
   const years = document.getElementById('TahunBuku').value;
   const isCompleted = document.getElementById('inputBuku').checked;
 
   const generateID = generateId();
-  const bookInput = generateBookObject(generateID, title,authors,years,isCompleted);
+  const bookInput = generateBookObject(generateID, title, authors, years, isCompleted);
   books.push(bookInput);
 
   document.dispatchEvent(new Event(RENDER_EVENT));
@@ -76,8 +78,8 @@ function addBook(){
 function generateId() {
   return +new Date();
 }
-   
-function generateBookObject(id, title, authors,years, isCompleted) {
+
+function generateBookObject(id, title, authors, years, isCompleted) {
   return {
     id,
     title,
@@ -87,7 +89,7 @@ function generateBookObject(id, title, authors,years, isCompleted) {
   }
 }
 
-function subBook(bookInput){
+function subBook(bookInput) {
   const bookTitle = document.createElement('h3');
   bookTitle.innerText = bookInput.title;
 
@@ -96,21 +98,16 @@ function subBook(bookInput){
 
   const yearTitle = document.createElement('p');
   yearTitle.innerText = 'Tahun Buku : ' + bookInput.years;
-    
+
   const container = document.createElement('article');
-  container.append(bookTitle,authorTitle,yearTitle);
+  container.append(bookTitle, authorTitle, yearTitle);
   container.setAttribute('class', `book_item-${bookInput.id}`);
 
   if (bookInput.isCompleted) {
     const Button = document.createElement('span');
-    Button.classList.add('material-symbols-outlined');
-    Button.style.backgroundColor = 'yellow';
-    Button.style.width = '5%';
-    Button.style.borderRadius = '10px';
-    Button.style.marginLeft ='80%';
-    Button.style.cursor ='pointer';
-    Button.style.paddingLeft ='2px';
+    Button.setAttribute('class', 'material-symbols-outlined button-refresh');
     Button.innerText = 'refresh';
+
     Button.addEventListener('click', function () {
       Swal.fire({
         title: 'APAKAH ANDA YAKIN?',
@@ -128,20 +125,13 @@ function subBook(bookInput){
           undoTaskFromCompleted(bookInput.id);
         }
       })
-      
+
     });
-        
+
     const trashButton = document.createElement('span');
-    trashButton.classList.add('material-symbols-outlined');
-    trashButton.style.backgroundColor = 'red';
-    trashButton.style.width = '5%';
-    trashButton.style.marginLeft ='20px';
-    trashButton.style.marginTop ='20px';
-    trashButton.style.borderRadius = '10px';
-    trashButton.style.cursor ='pointer';
-    trashButton.style.paddingLeft ='2px';
+    trashButton.setAttribute('class', 'material-symbols-outlined button-trash');
     trashButton.innerText = 'delete';
-     
+
     trashButton.addEventListener('click', function () {
       Swal.fire({
         title: 'APAKAH ANDA YAKIN?',
@@ -160,19 +150,13 @@ function subBook(bookInput){
         }
       })
     });
-     
+
     container.append(Button, trashButton);
   } else {
     const checkButton = document.createElement('span');
-    checkButton.classList.add('material-symbols-outlined');
-    checkButton.style.backgroundColor = 'green';
-    checkButton.style.width = '5%';
-    checkButton.style.marginLeft ='80%';
-    checkButton.style.borderRadius = '10px';
-    checkButton.style.cursor ='pointer';
-    checkButton.style.paddingLeft ='2px';
+    checkButton.setAttribute('class', 'material-symbols-outlined button-check');
     checkButton.innerText = 'check';
-        
+
     checkButton.addEventListener('click', function () {
       Swal.fire({
         title: 'APAKAH ANDA YAKIN?',
@@ -190,20 +174,13 @@ function subBook(bookInput){
           addTaskToCompleted(bookInput.id);
         }
       })
-    
+
     });
 
     const trashButton = document.createElement('span');
-    trashButton.classList.add('material-symbols-outlined');
-    trashButton.style.backgroundColor ='red';
-    trashButton.style.width ='5%';
-    trashButton.style.marginLeft ='20px';
-    trashButton.style.borderRadius = '10px';
-    trashButton.style.marginTop ='20px';
-    trashButton.style.cursor ='pointer';
-    trashButton.style.paddingLeft ='2px';
+    trashButton.setAttribute('class', 'material-symbols-outlined button-trash');
     trashButton.innerText = 'delete';
-     
+
     trashButton.addEventListener('click', function () {
       Swal.fire({
         title: 'APAKAH ADA YAKIN',
@@ -222,73 +199,85 @@ function subBook(bookInput){
         }
       })
     });
-    container.append(checkButton,trashButton);
+    container.append(checkButton, trashButton);
   }
   return container;
 };
 
-
-
-function addTaskToCompleted(bookId) {
-  const bookTarget = findbook(bookId);
-  if(bookTarget == null) return;
-  
-  bookTarget.isCompleted = true;
-  document.dispatchEvent(new Event(RENDER_EVENT));
-  saveData();
-};
-
-function findbook(bookId) {
-  for (const bookItem of books) {
-    if (bookItem.id === bookId) {
-      return bookItem;
-    }
-  }
-  return null;
-};
-
-function removeTaskFromCompleted(bookId) {
-  const bookTarget = findbookIndex(bookId);
-  if (bookTarget === -1) return;
-  books.splice(bookTarget, 1);
-  document.dispatchEvent(new Event(RENDER_EVENT));
-  saveData();
-};
-   
-   
-function undoTaskFromCompleted(bookId) {
-  const bookTarget = findbook(bookId);
-  if (bookTarget == null) return;
-  bookTarget.isCompleted = false;
-  document.dispatchEvent(new Event(RENDER_EVENT));
-  saveData()
-}
-
-function findbookIndex(bookId) {
-  for(index in books){
-      if(books[index].id === bookId){
-          return index
+document.getElementById('cari')
+  .addEventListener('submit', function (e) {
+      e.preventDefault();
+      const cariBuku = document.getElementById('search').value.toLowerCase();
+      const list = document.querySelectorAll('.book_item > h3');
+      for (const book of list) {
+        if (book.innerText.toLowerCase().includes(cariBuku)) {
+          book.parentElement.parentElement.style.display = 'block';
+        } else {
+          book.parentElement.parentElement.style.display = 'none';
+        }
       }
-  }
-  return -1
-};
+      });
+
+    function addTaskToCompleted(bookId) {
+      const bookTarget = findbook(bookId);
+      if (bookTarget == null) return;
+
+      bookTarget.isCompleted = true;
+      document.dispatchEvent(new Event(RENDER_EVENT));
+      saveData();
+    };
+
+    function findbook(bookId) {
+      for (const bookItem of books) {
+        if (bookItem.id === bookId) {
+          return bookItem;
+        }
+      }
+      return null;
+    };
+
+    function removeTaskFromCompleted(bookId) {
+      const bookTarget = findbookIndex(bookId);
+      if (bookTarget === -1) return;
+      books.splice(bookTarget, 1);
+      document.dispatchEvent(new Event(RENDER_EVENT));
+      saveData();
+    };
 
 
-
-document.addEventListener(RENDER_EVENT, function () {
-      
-  const incompleteBookshelfList = document.getElementById('incompleteBookshelfList');
-  incompleteBookshelfList.innerHTML = '';
-
-  const completedBook = document.getElementById('completeBookshelfList');
-  completedBook.innerHTML = '';
-  
-  for (booksItem of books) {
-    const bookElement = subBook(booksItem);
-    if (!booksItem.isCompleted){
-      incompleteBookshelfList.append(bookElement);
-    }else{
-      completedBook.append(bookElement);
+    function undoTaskFromCompleted(bookId) {
+      const bookTarget = findbook(bookId);
+      if (bookTarget == null) return;
+      bookTarget.isCompleted = false;
+      document.dispatchEvent(new Event(RENDER_EVENT));
+      saveData()
     }
-    }
-});
+
+    function findbookIndex(bookId) {
+      for (index in books) {
+        if (books[index].id === bookId) {
+          return index
+        }
+      }
+      return -1
+    };
+
+
+
+    document.addEventListener(RENDER_EVENT, function () {
+
+      const incompleteBookshelfList = document.getElementById('incompleteBookshelfList');
+      incompleteBookshelfList.innerHTML = '';
+
+      const completedBook = document.getElementById('completeBookshelfList');
+      completedBook.innerHTML = '';
+
+      for (booksItem of books) {
+        const bookElement = subBook(booksItem);
+        if (!booksItem.isCompleted) {
+          incompleteBookshelfList.append(bookElement);
+        } else {
+          completedBook.append(bookElement);
+        }
+      }
+    });

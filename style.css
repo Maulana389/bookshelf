@@ -94,3 +94,29 @@ nav{
     font-family: 'Bungee', cursive;
     font-size: 24px;
 }
+
+/* utilies */
+.button-refresh{
+    background-color: #F4E06D;
+    width: auto;
+    cursor: pointer;
+    margin-left: auto;
+    border-radius: 10px;
+    padding-left: 2px;
+}
+.button-check{
+    background-color: green;
+    width: auto;
+    margin-left: auto;
+    border-radius: 10px;
+    padding-left: 2px;
+    cursor: pointer;
+}
+.button-trash{
+    background-color: red;
+    width: auto;
+    margin-left: auto;
+    border-radius: 10px;
+    padding-left: 2px;
+    cursor: pointer;
+}
